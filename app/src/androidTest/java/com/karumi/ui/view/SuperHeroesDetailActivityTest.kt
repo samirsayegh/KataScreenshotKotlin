@@ -1,5 +1,6 @@
 package com.karumi.ui.view
 
+import android.os.Bundle
 import com.github.salomonbrys.kodein.Kodein.Module
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.instance
@@ -15,36 +16,73 @@ class SuperHeroesDetailActivityTest : AcceptanceTest<SuperHeroDetailActivity>(Su
     private lateinit var repository: SuperHeroRepository
 
     @Test
-    fun test() {
+    fun verifyAvengerSuperHero() {
+        whenever(repository.getByName(NAME)).thenReturn(superHero())
 
+        val activity = startActivity(Bundle().apply { putString(SuperHeroDetailActivity.SUPER_HERO_NAME_KEY, NAME) })
+
+        compareScreenshot(activity)
     }
 
-    private fun givenThereAreSomeSuperHeroes(
-        numberOfSuperHeroes: Int = 1,
-        avengers: Boolean = false
-    ): List<SuperHero> {
-        val superHeroes = IntRange(0, numberOfSuperHeroes - 1).map { id ->
-            val superHeroName = "SuperHero - $id"
-            val superHeroDescription = "Description Super Hero - $id"
-            SuperHero(
-                superHeroName, null, avengers,
-                superHeroDescription
-            )
-        }
+    @Test
+    fun verifyNonAvengerSuperHero() {
+        whenever(repository.getByName(NAME)).thenReturn(superHero(isAvenger = false))
 
-        whenever(repository.getAllSuperHeroes()).thenReturn(superHeroes)
-        return superHeroes
+        val activity = startActivity(Bundle().apply { putString(SuperHeroDetailActivity.SUPER_HERO_NAME_KEY, NAME) })
+
+        compareScreenshot(activity)
     }
 
-    private fun givenThereAreNoSuperHeroes() {
-        whenever(repository.getAllSuperHeroes()).thenReturn(emptyList())
+    @Test
+    fun verifyLongNameAndDescriptionSuperHero() {
+        val name = "This is a super long name for a hero that doesn't deserve to have it. I recommend for the next time to use an empty name or a single char name"
+        val description = "The description for the super hero " +
+                "This is a super long name for a hero that doesn't deserve to have it. I recommend for the next time to use an empty name or a single char name" +
+                " is that he likes to be known for spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and spam a lot and "
+        whenever(repository.getByName(name)).thenReturn(superHero(isAvenger = false, description = description))
+
+        val activity = startActivity(Bundle().apply { putString(SuperHeroDetailActivity.SUPER_HERO_NAME_KEY, name) })
+
+        compareScreenshot(activity)
     }
 
-    private fun givenOneSuperHeroeWithName(name: String) {
-        whenever(repository.getAllSuperHeroes()).thenReturn(listOf(SuperHero(name, null, false, "Description")))
+    @Test
+    fun verifySingleCharNameAndDescriptionSuperHero() {
+        val name = "?"
+        val description = "/"
+        whenever(repository.getByName(name)).thenReturn(superHero(isAvenger = false, description = description))
+
+        val activity = startActivity(Bundle().apply { putString(SuperHeroDetailActivity.SUPER_HERO_NAME_KEY, name) })
+
+        compareScreenshot(activity)
     }
+
+    @Test
+    fun verifyEmptyNameAndDescriptionSuperHero() {
+        val name = ""
+        val description = ""
+        whenever(repository.getByName(name)).thenReturn(superHero(isAvenger = false, description = description))
+
+        val activity = startActivity(Bundle().apply { putString(SuperHeroDetailActivity.SUPER_HERO_NAME_KEY, name) })
+
+        compareScreenshot(activity)
+    }
+
+    private fun superHero(
+        name: String = NAME,
+        description: String = DESCRIPTION,
+        isAvenger: Boolean = IS_AVENGER,
+        photo: String = PHOTO
+    ) = SuperHero(name, photo, isAvenger, description)
 
     override val testDependencies = Module(allowSilentOverride = true) {
         bind<SuperHeroRepository>() with instance(repository)
+    }
+
+    companion object {
+        private const val NAME = "name"
+        private const val DESCRIPTION = "description"
+        private const val IS_AVENGER = true
+        private const val PHOTO = "photo"
     }
 }
