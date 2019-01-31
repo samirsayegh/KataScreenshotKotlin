@@ -12,8 +12,48 @@ import org.mockito.Mockito.mock
 class SuperHeroViewHolderTest : ScreenshotTest {
 
     @Test
-    fun showsAnySuperHero() {
+    fun showsNonAvengerSuperHero() {
         val superHero = givenASuperHero()
+        val holder = givenASuperHeroViewHolder()
+
+        holder.render(superHero)
+
+        compareScreenshot(holder, R.dimen.super_hero_row_height)
+    }
+
+    @Test
+    fun showsAvengerSuperHero() {
+        val superHero = givenASuperHero(isAvenger = true)
+        val holder = givenASuperHeroViewHolder()
+
+        holder.render(superHero)
+
+        compareScreenshot(holder, R.dimen.super_hero_row_height)
+    }
+
+    @Test
+    fun showsShortNameSuperHero() {
+        val superHero = givenASuperHero(superHeroName = "")
+        val holder = givenASuperHeroViewHolder()
+
+        holder.render(superHero)
+
+        compareScreenshot(holder, R.dimen.super_hero_row_height)
+    }
+
+    @Test
+    fun showsLongNameSuperHero() {
+        val superHero = givenASuperHero(superHeroName = "This is a super long name for a hero that doesn't deserve to have it. I recommend for the next time to use an empty name or a single char name")
+        val holder = givenASuperHeroViewHolder()
+
+        holder.render(superHero)
+
+        compareScreenshot(holder, R.dimen.super_hero_row_height)
+    }
+
+    @Test
+    fun showsNoNameSuperHero() {
+        val superHero = givenASuperHero(superHeroName = "")
         val holder = givenASuperHeroViewHolder()
 
         holder.render(superHero)
