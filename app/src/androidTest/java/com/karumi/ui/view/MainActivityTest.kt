@@ -23,6 +23,60 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
         compareScreenshot(activity)
     }
 
+    @Test
+    fun shows10AvengersHeroes() {
+        givenThereAreSomeSuperHeroes(10, true)
+
+        val activity = startActivity()
+
+        compareScreenshot(activity)
+    }
+
+    @Test
+    fun shows10NonAvengersHeroes() {
+        givenThereAreSomeSuperHeroes(10)
+
+        val activity = startActivity()
+
+        compareScreenshot(activity)
+    }
+
+    @Test
+    fun showsOneAvengerHeroes() {
+        givenThereAreSomeSuperHeroes(avengers = true)
+
+        val activity = startActivity()
+
+        compareScreenshot(activity)
+    }
+
+    @Test
+    fun showsOneNonAvengerHeroes() {
+        givenThereAreSomeSuperHeroes()
+
+        val activity = startActivity()
+
+        compareScreenshot(activity)
+    }
+
+    @Test
+    fun showsALongSuperHeroName() {
+        givenOneSuperHeroeWithName("This is a super long name for a hero that doesn't deserve to have it. I recommend for the next time to use an empty name or a single char name")
+
+        val activity = startActivity()
+
+        compareScreenshot(activity)
+    }
+
+    @Test
+    fun showsAnEmptySuperHeroName() {
+        givenOneSuperHeroeWithName("")
+
+        val activity = startActivity()
+
+        compareScreenshot(activity)
+    }
+
     private fun givenThereAreSomeSuperHeroes(
         numberOfSuperHeroes: Int = 1,
         avengers: Boolean = false
@@ -42,6 +96,10 @@ class MainActivityTest : AcceptanceTest<MainActivity>(MainActivity::class.java) 
 
     private fun givenThereAreNoSuperHeroes() {
         whenever(repository.getAllSuperHeroes()).thenReturn(emptyList())
+    }
+
+    private fun givenOneSuperHeroeWithName(name: String) {
+        whenever(repository.getAllSuperHeroes()).thenReturn(listOf(SuperHero(name, null, false, "Description")))
     }
 
     override val testDependencies = Module(allowSilentOverride = true) {
